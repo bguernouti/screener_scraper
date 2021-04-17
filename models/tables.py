@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Text, Float, Boolean
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 
-engine = create_engine('postgresql://postgres:admin@localhost:5432/screener_in', echo=True)
+engine = create_engine('postgresql://postgres:admin@localhost:5432/screener_in')
 Base = declarative_base()
 session = sessionmaker(bind=engine)
 
@@ -33,25 +33,64 @@ class CompanyInfo(Base):
     ratios = relationship("Ratios", cascade="all, delete")
     shareholding = relationship("Shareholding", cascade="all, delete")
 
-    compounded_sales_growth = relationship("CompoundedSalesGrowth",
-                                           primaryjoin="and_(CompanyInfo.id == CompoundedSalesGrowth.company, CompoundedSalesGrowth.consolidated == False)", cascade="all, delete")
-    compounded_sales_growth_c = relationship("CompoundedSalesGrowth",
-                                             primaryjoin="and_(CompanyInfo.id == CompoundedSalesGrowth.company, CompoundedSalesGrowth.consolidated == True)", cascade="all, delete")
+    compounded_sales_growth = relationship(
+        "CompoundedSalesGrowth",
+        primaryjoin="and_(CompanyInfo.id == CompoundedSalesGrowth.company, CompoundedSalesGrowth.consolidated == False)",
+        cascade="all, delete",
+        backref="company_info",
+        overlaps="compounded_sales_growth_c, company_info"
+    )
 
-    compounded_profit_growth = relationship("CompoundedProfitGrowth",
-                                            primaryjoin="and_(CompanyInfo.id == CompoundedProfitGrowth.company, CompoundedProfitGrowth.consolidated == False)", cascade="all, delete")
-    compounded_profit_growth_c = relationship("CompoundedProfitGrowth",
-                                              primaryjoin="and_(CompanyInfo.id == CompoundedProfitGrowth.company, CompoundedProfitGrowth.consolidated == True)", cascade="all, delete")
+    compounded_sales_growth_c = relationship(
+        "CompoundedSalesGrowth",
+        primaryjoin="and_(CompanyInfo.id == CompoundedSalesGrowth.company, CompoundedSalesGrowth.consolidated == True)",
+        cascade="all, delete",
+        overlaps="compounded_sales_growth, company_info"
+    )
 
-    stock_price_cgar = relationship("StockPriceCAGR",
-                                    primaryjoin="and_(CompanyInfo.id == StockPriceCAGR.company, StockPriceCAGR.consolidated == False)", cascade="all, delete")
-    stock_price_cgar_c = relationship("StockPriceCAGR",
-                                      primaryjoin="and_(CompanyInfo.id == StockPriceCAGR.company, StockPriceCAGR.consolidated == True)", cascade="all, delete")
+    compounded_profit_growth = relationship(
+        "CompoundedProfitGrowth",
+        primaryjoin="and_(CompanyInfo.id == CompoundedProfitGrowth.company,CompoundedProfitGrowth.consolidated == False)",
+        cascade="all, delete",
+        backref="company_info",
+        overlaps="compounded_profit_growth_c, company_info"
+    )
 
-    return_on_quality = relationship("ReturnOnQuality",
-                                     primaryjoin="and_(CompanyInfo.id == ReturnOnQuality.company, ReturnOnQuality.consolidated == False)", cascade="all, delete")
-    return_on_quality_c = relationship("ReturnOnQuality",
-                                       primaryjoin="and_(CompanyInfo.id == ReturnOnQuality.company, ReturnOnQuality.consolidated == True)", cascade="all, delete")
+    compounded_profit_growth_c = relationship(
+        "CompoundedProfitGrowth",
+        primaryjoin="and_(CompanyInfo.id == CompoundedProfitGrowth.company,CompoundedProfitGrowth.consolidated == True)",
+        cascade="all, delete",
+        overlaps="compounded_profit_growth, company_info"
+    )
+
+    stock_price_cgar = relationship(
+        "StockPriceCAGR",
+        primaryjoin="and_(CompanyInfo.id == StockPriceCAGR.company, StockPriceCAGR.consolidated == False)",
+        cascade="all, delete",
+        backref="company_info",
+        overlaps="stock_price_cgar_c, company_info"
+    )
+
+    stock_price_cgar_c = relationship(
+        "StockPriceCAGR",
+        primaryjoin="and_(CompanyInfo.id == StockPriceCAGR.company, StockPriceCAGR.consolidated == True)",
+        cascade="all, delete",
+        overlaps="stock_price_cgar, company_info"
+    )
+
+    return_on_quality = relationship(
+        "ReturnOnQuality",
+        primaryjoin="and_(CompanyInfo.id == ReturnOnQuality.company, ReturnOnQuality.consolidated == False)",
+        cascade="all, delete",
+        backref="company_info",
+        overlaps="return_on_quality_c, company_info"
+    )
+    return_on_quality_c = relationship(
+        "ReturnOnQuality",
+        primaryjoin="and_(CompanyInfo.id == ReturnOnQuality.company, ReturnOnQuality.consolidated == True)",
+        cascade="all, delete",
+        overlaps="return_on_quality, company_info"
+    )
 
 
 class PeerComparison(Base):

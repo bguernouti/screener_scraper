@@ -1,23 +1,12 @@
 from models.to_sql import ToSQL
+import argparse
 
-comps = [
-    "ASIANPAINT",
-    "AXISBANK",
-    "DMART",
-    "ADANIGREEN",
-    "ADANIPORTS",
-    "ADANIENT",
-    "ATGL",
-    "ADANITRANS",
-    "BHARTIARTL",
-    "BAJAJFINSV",
-    "BAJAJ-AUTO",
-    "BRITANNIA",
-    "BPCL",
-    "BANDHANBNK"
-]
+parser = argparse.ArgumentParser()
 
-for comp in comps:
-    app = ToSQL(comp)
-    app.build()
-    print(comp, " Done.")
+parser.add_argument("company_name", help="The name of the company (nse) or (bse)")
+
+args = parser.parse_args()
+name = args.company_name
+app = ToSQL(name)
+app.build()
+
