@@ -3,7 +3,17 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Text, Float, Boolean
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 
-engine = create_engine('postgresql://postgres:admin@localhost:5432/screener_in')
+from config import CONFIG
+
+engine = create_engine("mssql+pyodbc://{}:{}@{}:{}/{}?driver={}".format(
+    CONFIG.USER,
+    CONFIG.PASSWORD,
+    CONFIG.HOST,
+    CONFIG.PORT,
+    CONFIG.DB_NAME,
+    CONFIG.DRIVER
+))
+
 Base = declarative_base()
 session = sessionmaker(bind=engine)
 

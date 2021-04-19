@@ -184,6 +184,7 @@ class ToSQL(object):
         pd_html: Any = pd.read_html(html.tostring(quarters_table, pretty_print=True))[0]
         quarters_df: Any = pd_html.set_index("Unnamed: 0", drop=True)
         quarters_df.index = quarters_df.index.str.replace("+", "")
+        quarters_df.fillna(0, inplace=True)
 
         self.__insert_months(quarters_df.columns, QuarterlyMonths)
         self.__insert_indexes(quarters_df.index, QuarterlyIndexes)
